@@ -7,88 +7,115 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            /* To'q kosmik indigo va boy qizil ranglar uyg'unligidagi hashamatli gradient fon */
-            background: radial-gradient(circle at 50% 30%, #1e112a 0%, #0c0512 60%, #020005 100%);
+            transition: background 1s ease;
             color: #f3f4f6;
             min-height: 100vh;
+            overflow-x: hidden;
         }
-        .font-royal { font-family: 'Cinzel', serif; }
+        .font-tech { font-family: 'Space Grotesk', sans-serif; }
         
-        /* Oltin Rangli Shisha paneli */
-        .gold-panel {
-            background: rgba(255, 255, 255, 0.015);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(212, 175, 55, 0.12);
-        }
-        
-        /* Oltin Rangli Nafis Hover */
-        .gold-hover:hover {
-            border-color: rgba(212, 175, 55, 0.6);
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
-            transform: translateY(-2px);
-            color: #fbbf24;
+        /* 21-asr Minimalist Shisha Paneli */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
         }
 
-        /* Tanlangan faol tugma */
-        .active-gold {
-            background: linear-gradient(135deg, #d4af37 0%, #9a730c 100%) !important;
-            color: #000000 !important;
-            font-weight: 700;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-            border-color: #d4af37 !important;
+        /* Hover va interaktiv harakatlar */
+        .neon-hover {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .neon-hover:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 10px 25px var(--accent-glow);
+            border-color: var(--accent-color);
         }
 
-        /* Modal chiqish animatsiyasi */
-        @keyframes modalSlideUp {
-            from { opacity: 0; transform: translateY(15px) scale(0.97); }
+        /* Skanerlash chizig'i effekti (Rasm ustida) */
+        .scanline::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        /* Dinamik Karaoke Subtitrlari uchun */
+        .word-span {
+            display: inline-block;
+            margin-right: 6px;
+            transition: all 0.2s ease;
+            color: rgba(255, 255, 255, 0.4);
+        }
+        .word-active {
+            color: #fbbf24 !important;
+            text-shadow: 0 0 12px rgba(251, 191, 36, 0.8);
+            transform: scale(1.1);
+        }
+
+        /* Zarrachalar (Particles) foni */
+        #particles-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Animatsiyalar */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.96); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
-        .animate-modal {
-            animation: modalSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        .animate-modern-modal {
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
     </style>
 </head>
-<body class="flex flex-col justify-between selection:bg-amber-600 selection:text-white">
+<body class="flex flex-col justify-between selection:bg-amber-600 selection:text-white relative">
 
-    <!-- FONDAGI KOSMIK TUMANLIK EFFEKTI -->
-    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-purple-500/5 rounded-full blur-[130px] pointer-events-none -z-10"></div>
-    <div class="fixed bottom-10 left-1/3 w-[500px] h-[250px] bg-amber-500/5 rounded-full blur-[110px] pointer-events-none -z-10"></div>
+    <!-- Dinamik Zarrachalar foni (Qor, xazon, quyosh nurlari) -->
+    <canvas id="particles-canvas"></canvas>
 
     <!-- HEADER -->
-    <header class="pt-12 pb-8 px-4 text-center relative z-10">
-        <div class="inline-block px-4 py-1 mb-4 rounded-full gold-panel border-amber-500/20 text-amber-400 text-xs tracking-widest uppercase font-semibold">
-            🏆 366 KUNLIK TO'LIQ ARXIVALANGAN TAQVIM
+    <header class="pt-16 pb-8 px-4 text-center relative z-10">
+        <div id="season-badge" class="inline-block px-4 py-1 mb-4 rounded-full glass-panel text-xs tracking-widest uppercase font-semibold transition-all duration-1000">
+            YUKLANMOQDA...
         </div>
-        <h1 class="text-3xl md:text-5xl font-extrabold font-royal tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-yellow-400 to-amber-600 drop-shadow-[0_4px_8px_rgba(212,175,55,0.1)]">
-            GINNES REKORDLARI
+        <h1 class="text-4xl md:text-6xl font-black font-tech tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-500">
+            GWR CHRONICLES
         </h1>
-        <p class="text-gray-400 mt-3 max-w-xl mx-auto text-xs md:text-sm font-light uppercase tracking-wider">
-            Dunyo tarixidagi eng aqldan ozgan va hayratlanarli g'alabalar taqvimi
+        <p class="text-gray-400 mt-3 max-w-xl mx-auto text-xs md:text-sm font-light uppercase tracking-widest">
+            Koinot va Yer yuzidagi eng aqlbovar qilmas rekordlar kutubxonasi
         </p>
     </header>
 
     <!-- ASOSIY APARAT -->
     <main class="max-w-6xl mx-auto px-4 py-4 w-full flex-grow z-10">
         
-        <!-- BUGUNGI KUN KARTASI -->
-        <div class="gold-panel rounded-3xl p-1 mb-12 shadow-[0_15px_40px_rgba(0,0,0,0.5)] border border-amber-500/10">
-            <div class="bg-black/35 rounded-[22px] p-6 md:p-8 flex flex-col md:flex-row items-center gap-6">
-                <div class="w-full md:w-1/3 h-52 rounded-xl overflow-hidden relative shadow-inner border border-white/5">
-                    <img id="today-img" src="https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&auto=format&fit=crop&q=80" alt="Kun Rekordi" class="w-full h-full object-cover">
-                    <div class="absolute top-3 left-3 bg-black/80 backdrop-blur-md text-amber-400 border border-amber-500/20 px-3 py-1 rounded-md text-[9px] font-bold tracking-widest uppercase">
-                        BUGUNGI REKORD
+        <!-- KATTA KUN REKORDI KARTASI -->
+        <div class="glass-panel rounded-3xl p-1 mb-12 border border-white/10">
+            <div class="bg-black/20 rounded-[22px] p-6 md:p-8 flex flex-col md:flex-row items-center gap-6">
+                <div class="w-full md:w-1/3 h-52 rounded-2xl overflow-hidden relative shadow-2xl border border-white/10 scanline group">
+                    <img id="today-img" src="" alt="Bugungi rekord" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div class="absolute top-3 left-3 bg-white/10 backdrop-blur-md text-white border border-white/20 px-3 py-1 rounded-full text-[9px] font-bold tracking-widest uppercase">
+                        BUGUNGI KASHFIYOT
                     </div>
                 </div>
                 <div class="w-full md:w-2/3 text-center md:text-left">
-                    <span id="today-date-badge" class="text-xs font-royal text-amber-500 tracking-wider uppercase font-semibold">BUGUN</span>
-                    <h2 id="today-title" class="text-xl md:text-2xl font-bold mt-1 mb-3 text-white">Eng ajoyib loyiha muvaffaqiyati</h2>
-                    <p id="today-desc" class="text-gray-300 text-sm leading-relaxed font-light">
+                    <span id="today-date-badge" class="text-xs font-tech text-gray-400 tracking-widest uppercase font-semibold">15-IYUL</span>
+                    <h2 id="today-title" class="text-2xl md:text-3xl font-extrabold mt-1 mb-3 text-white tracking-tight">Yuklanmoqda...</h2>
+                    <p id="today-desc" class="text-gray-400 text-sm leading-relaxed font-light">
                         ...
                     </p>
                 </div>
@@ -96,177 +123,275 @@
         </div>
 
         <!-- OYLAR NAVIGATSIYASI -->
-        <div id="months-container" class="flex flex-wrap justify-center gap-2 mb-10 pb-4 border-b border-white/5">
+        <div id="months-container" class="flex flex-wrap justify-center gap-2 mb-10 pb-6 border-b border-white/5">
             <!-- Dinamik oylar -->
         </div>
 
-        <!-- TANLANGAN OY -->
-        <div class="text-center mb-8">
-            <h3 id="selected-month-title" class="text-2xl md:text-3xl font-royal text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 capitalize">
+        <!-- SEZON SArLAVHASI -->
+        <div class="text-center mb-10">
+            <h3 id="selected-month-title" class="text-3xl md:text-4xl font-tech font-bold text-white tracking-tight capitalize">
                 Yanvar Oyi
             </h3>
-            <p class="text-[10px] text-amber-500/60 mt-1 tracking-widest uppercase">Istagan kunni tanlang va qiziqarli rekordni o'qing</p>
+            <p class="text-[10px] text-gray-500 mt-1 tracking-widest uppercase">Faslga xos interaktiv muhit va rekordlar olami</p>
         </div>
 
-        <!-- KUNLAR GRIDI -->
+        <!-- KUNLAR SETKASI (GRID) -->
         <div id="days-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3">
             <!-- Dinamik kunlar -->
         </div>
 
     </main>
 
-    <!-- REKORD MODAL OYNASI (SALYUTSIZ, LUXURY DIZAYN) -->
-    <div id="record-modal" class="fixed inset-0 bg-black/95 backdrop-blur-lg z-50 hidden flex items-center justify-center p-4">
-        <div id="modal-content" class="gold-panel bg-[#0c0512]/95 border border-amber-500/25 p-6 rounded-2xl max-w-lg w-full relative shadow-[0_0_50px_rgba(212,175,55,0.08)] animate-modal">
+    <!-- ZAMONAVIY 3D DETALLI MODAL OYNASI (KAROKE SUBTITRLI) -->
+    <div id="record-modal" class="fixed inset-0 bg-black/85 backdrop-blur-xl z-50 hidden flex items-center justify-center p-4">
+        <div id="modal-content" class="glass-panel border border-white/15 p-6 rounded-3xl max-w-lg w-full relative shadow-[0_0_80px_rgba(255,255,255,0.05)] animate-modern-modal">
             
-            <!-- Modal Yopish tugmasi -->
-            <button onclick="closeModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white flex items-center justify-center text-lg transition">&times;</button>
+            <!-- Yopish tugmasi -->
+            <button onclick="closeModal()" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white flex items-center justify-center text-xl transition-all duration-300 hover:scale-110">&times;</button>
             
-            <div class="relative h-48 -mx-6 -mt-6 mb-6 overflow-hidden border-b border-amber-500/10">
-                <img id="modal-img" src="" alt="Rekord rasmi" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-[#0c0512] via-transparent to-transparent"></div>
-                <span id="modal-date" class="absolute bottom-3 left-6 font-royal text-[9px] px-3 py-1 rounded bg-amber-500 text-black font-extrabold tracking-wider">
+            <!-- Rasm va Visual Skanerlash -->
+            <div class="relative h-56 -mx-6 -mt-6 mb-6 overflow-hidden border-b border-white/10 scanline">
+                <img id="modal-img" src="" alt="Rekord" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
+                <span id="modal-date" class="absolute bottom-4 left-6 font-tech text-xs px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white font-bold tracking-wider uppercase">
                     1-YANVAR
                 </span>
             </div>
 
-            <h4 id="modal-title" class="text-xl font-bold text-white mb-2 leading-snug"></h4>
-            <p id="modal-desc" class="text-gray-300 text-sm leading-relaxed font-light mb-6"></p>
+            <!-- Sarlavha -->
+            <h4 id="modal-title" class="text-2xl font-black text-white mb-4 leading-snug tracking-tight"></h4>
             
-            <div class="flex items-center justify-between border-t border-white/5 pt-4 text-[9px] text-gray-500 font-mono tracking-widest">
-                <span>🏆 RASMIY GINNES REKORDI</span>
-                <span id="modal-code" class="text-amber-500">GWR-777</span>
+            <!-- Subtitr o'qiluvchi karoke hududi -->
+            <div id="subtitles-area" class="text-gray-300 text-base leading-relaxed font-normal min-h-[90px] mb-6 p-4 rounded-2xl bg-black/30 border border-white/5">
+                <!-- So'zlar bu yerda dinamik ravishda bittadan o'qiladi -->
+            </div>
+
+            <div class="flex items-center justify-between border-t border-white/10 pt-4 text-[10px] text-gray-500 font-tech tracking-widest">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span>ONLINE CHRONICLE</span>
+                </div>
+                <button onclick="toggleSpeech()" id="audio-btn" class="px-3 py-1 rounded-md bg-white/5 border border-white/10 text-amber-400 hover:bg-amber-400 hover:text-black transition">
+                    🔊 Qayta eshitish
+                </button>
             </div>
         </div>
     </div>
 
     <!-- FOOTER -->
-    <footer class="py-8 text-center text-gray-700 text-[10px] border-t border-white/5 font-mono tracking-wider">
-        <p>GINNES JAHON REKORDLARI ENSYKLOPEDIYASI &bull; 2026</p>
+    <footer class="py-8 text-center text-gray-600 text-[10px] border-t border-white/5 font-tech tracking-widest">
+        <p>GWR SYSTEM &bull; 21ST CENTURY EDITION</p>
     </footer>
 
-    <!-- JAVASCRIPT VA INTEGRAL REKORD GENERATORI -->
+    <!-- JAVASCRIPT VA INTEGRAL INTERAKTIV TIZIM -->
     <script>
         const months = [
-            { id: 'yanvar', name: 'Yanvar', days: 31 },
-            { id: 'fevral', name: 'Fevral', days: 29 },
-            { id: 'mart', name: 'Mart', days: 31 },
-            { id: 'aprel', name: 'Aprel', days: 30 },
-            { id: 'may', name: 'May', days: 31 },
-            { id: 'iyun', name: 'Iyun', days: 30 },
-            { id: 'iyul', name: 'Iyul', days: 31 },
-            { id: 'avgust', name: 'Avgust', days: 31 },
-            { id: 'sentabr', name: 'Sentabr', days: 30 },
-            { id: 'oktabr', name: 'Oktabr', days: 31 },
-            { id: 'noyabr', name: 'Noyabr', days: 30 },
-            { id: 'dekabr', name: 'Dekabr', days: 31 }
+            { id: 'yanvar', name: 'Yanvar', days: 31, season: 'winter' },
+            { id: 'fevral', name: 'Fevral', days: 29, season: 'winter' },
+            { id: 'mart', name: 'Mart', days: 31, season: 'spring' },
+            { id: 'aprel', name: 'Aprel', days: 30, season: 'spring' },
+            { id: 'may', name: 'May', days: 31, season: 'spring' },
+            { id: 'iyun', name: 'Iyun', days: 30, season: 'summer' },
+            { id: 'iyul', name: 'Iyul', days: 31, season: 'summer' },
+            { id: 'avgust', name: 'Avgust', days: 31, season: 'summer' },
+            { id: 'sentabr', name: 'Sentabr', days: 30, season: 'autumn' },
+            { id: 'oktabr', name: 'Oktabr', days: 31, season: 'autumn' },
+            { id: 'noyabr', name: 'Noyabr', days: 30, season: 'autumn' },
+            { id: 'dekabr', name: 'Dekabr', days: 31, season: 'winter' }
         ];
 
-        // 12 ta xilma-xil qiziqarli mavzular to'plami (avtomatik 366 kunlik rekordlarni yaratish uchun)
+        // Sezonlar bo'yicha visual muhit sozlamalari
+        const seasonalStyles = {
+            winter: {
+                bg: "radial-gradient(circle at 50% 30%, #0d1b2a 0%, #010811 70%, #000000 100%)",
+                badge: "❄️ SHOV-SHUVLI QISH FASLI",
+                color: "#60a5fa",
+                glow: "rgba(96, 165, 250, 0.2)"
+            },
+            spring: {
+                bg: "radial-gradient(circle at 50% 30%, #0f2416 0%, #020a05 70%, #000000 100%)",
+                badge: "🌸 YAShIL LIFTING: BAHOR",
+                color: "#34d399",
+                glow: "rgba(52, 211, 153, 0.2)"
+            },
+            summer: {
+                bg: "radial-gradient(circle at 50% 30%, #291a03 0%, #0d0801 70%, #000000 100%)",
+                badge: "🔥 QAYNOQ VA G'AROYIB YOZ",
+                color: "#fbbf24",
+                glow: "rgba(251, 191, 36, 0.2)"
+            },
+            autumn: {
+                bg: "radial-gradient(circle at 50% 30%, #241107 0%, #0a0401 70%, #000000 100%)",
+                badge: "🍁 OLTIN REKORDLAR KUZI",
+                color: "#f97316",
+                glow: "rgba(249, 115, 22, 0.2)"
+            }
+        };
+
+        // GWR Ma'lumot shablonlari
         const recordTemplates = [
             {
-                title: "Eng katta shokoladli haykal",
-                desc: "Italiyalik qandolatchilar tomonidan og'irligi naq 10 180 kg bo'lgan ulkan shokoladli bino shaklidagi haykal yaratildi. Uni tayyorlash uchun 50 nafar usta tunu kun mehnat qildi.",
+                title: "Eng katta shokoladli mo''jiza",
+                desc: "Italiyalik mashhur ustalar tomonidan og'irligi 10 180 kg bo'lgan ulkan shokoladli haykal yaratildi. Uni tayyorlashga bir oydan ortiq vaqt ketgan.",
                 img: "https://images.unsplash.com/photo-1511381939415-e44015466834?w=600&auto=format&fit=crop&q=80"
             },
             {
-                title: "Muz ostida eng uzoq vaqt nafas ushlab turish",
-                desc: "Xorvatiyalik g'avvos Budimir Sobat maxsus kislorodli tayyorgarlikdan so'ng suv ostida nafas olmasdan 24 daqiqa-yu 37 soniya qolib, mutlaq jahon rekordini o'rnatdi.",
+                title: "Muz ostida rekord darajadagi sho'ng'ish",
+                desc: "Xorvatiyalik g'avvos Budimir Sobat suv ostida maxsus kislorodsiz roppa-rosa 24 daqiqa-yu 37 soniya qolib, inson imkoniyatlarini yangiladi.",
                 img: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&auto=format&fit=crop&q=80"
             },
             {
-                title: "Eng katta qog'oz samolyot parvozi",
-                desc: "Tramp-klass talabalari yaratgan qanotlari kengligi 18 metrlik qog'oz samolyot 5 qavatli bino balandligidan muvaffaqiyatli uchirildi va havoda eng uzoq vaqt muallaq turdi.",
-                img: "https://images.unsplash.com/photo-1517976487492-5750f3195933?w=600&auto=format&fit=crop&q=80"
+                title: "Kosmosda eng uzoq vaqt qolish",
+                desc: "Kosmonavtlar ochiq koinot stantsiyasida jami bo'lib 878 kun yashab, sayyoradan tashqaridagi eng uzoq hayot rekordini o'rnatdilar.",
+                img: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&auto=format&fit=crop&q=80"
             },
             {
-                title: "Dunyoning eng baland qum qasri",
-                desc: "Daniyada balandligi 21.16 metr bo'lgan g'aroyib qum qal'asi bunyod etildi. Uni shamol va yomg'ir yiqitmasligi uchun qumga maxsus loy aralashtirilgan.",
+                title: "Yer yuzidagi eng baland qum saroyi",
+                desc: "Yevropa sohilida balandligi 21 metrlik ajoyib qum saroyi qurildi. Qurilishda minglab tonna maxsus qum ishlatilgan.",
                 img: "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?w=600&auto=format&fit=crop&q=80"
             },
             {
-                title: "Bir daqiqada eng ko'p sindirilgan tualet qopqoqlari",
-                desc: "Amerikalik Kevin Shelli bor-yo'g'i 60 soniya ichida o'z boshi bilan 46 ta qattiq yog'ochli tualet qopqog'ini urib sindirib, dunyoni hayratda qoldirdi.",
-                img: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=600&auto=format&fit=crop&q=80"
-            },
-            {
-                title: "Eng uzoq davom etgan hiqichoq tutishi",
-                desc: "AQShlik Charlz Osborn 1922-yilda to'satdan hiqillashni boshladi va bu holat roppa-rosa 68 yil davom etib, 1990-yilda o'z-o'zidan to'xtadi.",
-                img: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=600&auto=format&fit=crop&q=80"
-            },
-            {
-                title: "Soqol bilan ko'tarilgan eng og'ir yuk",
-                desc: "Litva fuqarosi Antanas Kontrimas o'zining baquvvat uzun soqoli yordamida og'irligi 63.8 kg bo'lgan ayol kishini erdan ko'tarib, havoda 15 soniya ushlab turdi.",
-                img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&auto=format&fit=crop&q=80"
-            },
-            {
-                title: "Dunyoning eng baland bo'yli odami",
-                desc: "Tarixdagi eng uzun inson Robert Uadlou bo'lib, uning bo'yi 2 metr-u 72 santimetrga etgan. U o'z davrida gigant va juda mehribon inson bo'lgan.",
-                img: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=600&auto=format&fit=crop&q=80"
-            },
-            {
-                title: "Eng tezkor Rubik kubigi yig'ish",
-                desc: "Maks Park ismli yigit 3x3 o'lchamdagi standart Rubik kubigini bor-yo'g'i 3.13 soniya ichida yig'ib, aqldan ozdiruvchi tezlik namoyish qildi.",
+                title: "Eng tez yig'ilgan kubik rubik",
+                desc: "Maks Park ismli yosh daho Rubik kubigini bor-yo'g'i 3.13 soniya ichida to'liq yig'ib, aqldan ozdiruvchi rekord o'rnatdi.",
                 img: "https://images.unsplash.com/photo-1591991731833-b4807cf7ef94?w=600&auto=format&fit=crop&q=80"
-            },
-            {
-                title: "Eng uzun makaron tayyorlash rekordi",
-                desc: "Xitoyda oshpazlar bitta xamirdan uzilmasdan ketadigan uzunligi roppa-rosa 3018 metr bo'lgan ulkan milliy lag'mon makaronini cho'zib tayyorlashdi.",
-                img: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&auto=format&fit=crop&q=80"
-            },
-            {
-                title: "Eng ko'p asalari qoplagan inson",
-                desc: "Xitoylik Ruan Liangming o'zining ustiga og'irligi taxminan 62 kilogramm bo'lgan 630 000 tadan ortiq jonli asalarilarni qo'ndirib rekord o'rnatdi.",
-                img: "https://images.unsplash.com/photo-1473081556163-2a17de81fc97?w=600&auto=format&fit=crop&q=80"
-            },
-            {
-                title: "Kosmosda eng uzoq vaqt yashash",
-                desc: "Rossiyalik kosmonavt Gennadiy Padalka kosmik stantsiyada jami bo'lib 878 kun-u 11 soat vaqt o'tkazdi va koinotning eng sadoqatli sayyohiga aylandi.",
-                img: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&auto=format&fit=crop&q=80"
             }
         ];
 
-        // 366 kun uchun har xil rasm fondlari
-        const randomImages = [
-            "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&auto=format&fit=crop&q=80",
+        const fallbackImages = [
             "https://images.unsplash.com/photo-1467810563316-b5476525c0f9?w=600&auto=format&fit=crop&q=80",
             "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=600&auto=format&fit=crop&q=80",
-            "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&auto=format&fit=crop&q=80",
-            "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600&auto=format&fit=crop&q=80",
-            "https://images.unsplash.com/photo-1527269537047-417be94e97cd?w=600&auto=format&fit=crop&q=80"
+            "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&auto=format&fit=crop&q=80"
         ];
 
         let currentMonth = 'yanvar';
+        let currentUtterance = null;
+        let subtitleInterval = null;
 
-        // Har bir kun uchun matematik algoritmik rekord generatori (366 kunni 100% turlicha to'ldiradi)
+        // Dinamik zarrachalar generatori (Canvas)
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor(type) {
+                this.type = type;
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height - canvas.height;
+                this.vx = Math.random() * 1.5 - 0.75;
+                this.vy = Math.random() * 2 + 1;
+                this.size = Math.random() * 3 + 1;
+                this.color = '#ffffff';
+                this.angle = Math.random() * Math.PI * 2;
+                
+                if (type === 'spring') {
+                    this.color = `rgba(244, 143, 177, ${Math.random() * 0.7 + 0.3})`; // Pushti gilos guli
+                    this.size = Math.random() * 6 + 3;
+                } else if (type === 'autumn') {
+                    this.color = `rgba(${200 + Math.random() * 55}, ${100 + Math.random() * 50}, 20, ${Math.random() * 0.7 + 0.3})`; // Xazon rangi
+                    this.size = Math.random() * 8 + 4;
+                } else if (type === 'summer') {
+                    this.color = `rgba(251, 191, 36, ${Math.random() * 0.4})`; // Quyosh uchquni
+                    this.vy = Math.random() * 0.5 + 0.2;
+                    this.size = Math.random() * 10 + 5;
+                }
+            }
+
+            update() {
+                this.y += this.vy;
+                this.x += this.vx;
+                this.angle += 0.01;
+
+                if (this.y > canvas.height) {
+                    this.y = -10;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                if (this.type === 'winter') {
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+                    ctx.fill();
+                } else if (this.type === 'summer') {
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = '#fbbf24';
+                    ctx.fill();
+                    ctx.shadowBlur = 0; // reset
+                } else {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.angle);
+                    ctx.ellipse(0, 0, this.size, this.size / 2, 0, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+        }
+
+        function initParticles(season) {
+            particles = [];
+            let count = season === 'winter' ? 80 : 40;
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle(season));
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // Rekordni qaytaruvchi integral algoritm
         function getRecord(monthId, dayNum) {
-            const monthIndex = months.findIndex(m => m.id === monthId);
-            // Kunning yildagi taxminiy tartib raqami
-            const uniqueSeed = (monthIndex * 31) + parseInt(dayNum);
-            
-            // Shablondan mosini olish
-            const templateIndex = uniqueSeed % recordTemplates.length;
-            const template = recordTemplates[templateIndex];
-            
-            // Har bir kun o'ziga xos va har xil bo'lishi uchun ma'lumotlarni o'zgartiramiz
-            const recordNumber = 200 + (uniqueSeed * 3);
-            const rasm = randomImages[uniqueSeed % randomImages.length];
+            const mIndex = months.findIndex(m => m.id === monthId);
+            const seed = (mIndex * 31) + parseInt(dayNum);
+            const template = recordTemplates[seed % recordTemplates.length];
+            const rasm = fallbackImages[seed % fallbackImages.length];
 
             return {
-                title: `${template.title} (№${recordNumber})`,
-                desc: `Yilning ${uniqueSeed}-kuni o'rnatilgan g'aroyib muvaffaqiyat: ` + template.desc + ` Ushbu natija Ginnes qo'mitasining rasmiy komissiyasi tomonidan qayd etilgan.`,
+                title: `${template.title} #${100 + seed}`,
+                desc: template.desc + ` Ushbu ajoyib muvaffaqiyat rasmiy hakamlar tomonidan qayd etildi.`,
                 img: rasm
             };
         }
 
-        // Oylarni ekranga chiqarish
+        // Oylarni vizual va faslga qarab yangilab chiqarish
         function renderMonths() {
             const container = document.getElementById('months-container');
             container.innerHTML = '';
             months.forEach(m => {
                 const btn = document.createElement('button');
                 btn.innerText = m.name;
-                btn.className = `px-4 py-2 rounded-lg gold-panel text-xs transition-all duration-300 font-medium text-gray-400 hover:text-white ${m.id === currentMonth ? 'active-gold' : 'gold-hover'}`;
+                
+                const style = seasonalStyles[m.season];
+                btn.className = `px-4 py-2 rounded-xl glass-panel text-xs transition-all duration-300 font-semibold text-gray-400 hover:text-white neon-hover`;
+                
+                btn.style.setProperty('--accent-color', style.color);
+                btn.style.setProperty('--accent-glow', style.glow);
+
+                if (m.id === currentMonth) {
+                    btn.style.background = style.color;
+                    btn.style.color = '#000000';
+                    btn.style.borderColor = style.color;
+                    btn.style.boxShadow = `0 10px 25px ${style.glow}`;
+                }
+
                 btn.onclick = () => selectMonth(m.id);
                 container.appendChild(btn);
             });
@@ -274,10 +399,18 @@
 
         function selectMonth(monthId) {
             currentMonth = monthId;
+            const monthObj = months.find(m => m.id === monthId);
+            const style = seasonalStyles[monthObj.season];
+
+            // Orqa fonni o'zgartirish
+            document.body.style.background = style.bg;
+            document.getElementById('season-badge').innerText = style.badge;
+            document.getElementById('season-badge').style.color = style.color;
+            document.getElementById('selected-month-title').innerText = monthObj.name + " Oyi";
+
+            initParticles(monthObj.season);
             renderMonths();
             renderDays();
-            const monthObj = months.find(m => m.id === monthId);
-            document.getElementById('selected-month-title').innerText = monthObj.name + " Oyi";
         }
 
         // Kunlarni chiqarish
@@ -285,16 +418,18 @@
             const grid = document.getElementById('days-grid');
             grid.innerHTML = '';
             const monthObj = months.find(m => m.id === currentMonth);
+            const style = seasonalStyles[monthObj.season];
             
             for (let i = 1; i <= monthObj.days; i++) {
                 const btn = document.createElement('button');
-                btn.className = `group relative h-14 rounded-xl gold-panel flex flex-col items-center justify-center transition-all duration-300 gold-hover cursor-pointer`;
-                
-                // Har bir kunda rekord borligi haqida indikator ko'rsatkich
+                btn.className = `group relative h-16 rounded-2xl glass-panel flex flex-col items-center justify-center transition-all duration-300 neon-hover cursor-pointer`;
+                btn.style.setProperty('--accent-color', style.color);
+                btn.style.setProperty('--accent-glow', style.glow);
+
                 btn.innerHTML = `
-                    <span class="absolute top-1.5 right-2 w-1.5 h-1.5 rounded-full bg-amber-500/80"></span>
-                    <span class="text-[9px] text-gray-500 font-royal tracking-widest">KUN</span>
-                    <span class="text-base font-bold text-white group-hover:text-amber-400 transition">${i}</span>
+                    <span class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full" style="background-color: ${style.color}"></span>
+                    <span class="text-[8px] text-gray-500 font-tech tracking-widest">KUN</span>
+                    <span class="text-lg font-bold text-white group-hover:text-amber-400 transition">${i}</span>
                 `;
                 
                 btn.onclick = () => openModal(currentMonth, i);
@@ -302,40 +437,95 @@
             }
         }
 
-        // Modalni ochish (Silliq chiqishi bilan)
+        // Ovozli o'qish va Karaoke Subtitr tizimi
+        let currentWords = [];
+        let activeWordIndex = -1;
+
         function openModal(month, day) {
             const monthObj = months.find(m => m.id === month);
             const data = getRecord(month, day);
 
             document.getElementById('modal-date').innerText = `${day}-${monthObj.name.toUpperCase()}`;
             document.getElementById('modal-title').innerText = data.title;
-            document.getElementById('modal-desc').innerText = data.desc;
             document.getElementById('modal-img').src = data.img;
-            
-            document.getElementById('modal-code').innerText = `GWR-${1000 + parseInt(day) * 11}`;
 
-            const modal = document.getElementById('record-modal');
-            modal.classList.remove('hidden');
+            // Matnni so'zlarga bo'lib chiqish
+            const descText = data.desc;
+            currentWords = descText.split(" ");
+            const subtitleArea = document.getElementById('subtitles-area');
+            subtitleArea.innerHTML = currentWords.map((word, idx) => `<span class="word-span" id="word-${idx}">${word}</span>`).join("");
+
+            // Modalni ochish
+            document.getElementById('record-modal').classList.remove('hidden');
+
+            // Ovozni avtomatik yoqish
+            startSpeech(descText);
+        }
+
+        function startSpeech(text) {
+            // Avvalgi ovozlarni to'xtatish
+            window.speechSynthesis.cancel();
+            if (subtitleInterval) clearInterval(subtitleInterval);
+
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            
+            // Ko'proq mos keladigan o'qish tezligi
+            currentUtterance.rate = 0.85; 
+            
+            // Qurilmadagi eng yaxshi ovozni tanlash
+            const voices = window.speechSynthesis.getVoices();
+            // Agar turk yoki rus tili bo'lsa (o'zbek tiliga ohangdoshroq), uni tanlaydi
+            const preferredVoice = voices.find(v => v.lang.startsWith('tr') || v.lang.startsWith('ru') || v.lang.startsWith('uz')) || voices[0];
+            if (preferredVoice) currentUtterance.voice = preferredVoice;
+
+            activeWordIndex = 0;
+            const wordsCount = currentWords.length;
+            // Har bir so'zning taxminiy o'qilish vaqti (ms larda hisoblash)
+            const durationPerWord = (text.length * 65) / wordsCount; 
+
+            // So'zlarni birma-bir yoqish animatsiyasi
+            subtitleInterval = setInterval(() => {
+                if (activeWordIndex < wordsCount) {
+                    // Avvalgi faol so'zni o'chirish
+                    if (activeWordIndex > 0) {
+                        document.getElementById(`word-${activeWordIndex - 1}`).classList.remove('word-active');
+                    }
+                    // Yangi so'zni faollashtirish
+                    const currentSpan = document.getElementById(`word-${activeWordIndex}`);
+                    if (currentSpan) currentSpan.classList.add('word-active');
+                    activeWordIndex++;
+                } else {
+                    clearInterval(subtitleInterval);
+                }
+            }, durationPerWord);
+
+            window.speechSynthesis.speak(currentUtterance);
+        }
+
+        function toggleSpeech() {
+            const title = document.getElementById('modal-title').innerText;
+            const spans = document.querySelectorAll('.word-span');
+            const words = Array.from(spans).map(s => s.innerText);
+            startSpeech(words.join(" "));
         }
 
         function closeModal() {
-            const modal = document.getElementById('record-modal');
-            modal.classList.add('hidden');
+            window.speechSynthesis.cancel();
+            if (subtitleInterval) clearInterval(subtitleInterval);
+            document.getElementById('record-modal').classList.add('hidden');
         }
 
-        // Tashqariga bosilganda modalni yopish
+        // Tashqarini bosganda modalni yopish
         document.getElementById('record-modal').addEventListener('click', function(e) {
             if (e.target === this) closeModal();
         });
 
-        // Birinchi ishga tushirish
+        // Sahifa yuklanganda ishga tushirish
         window.onload = () => {
-            renderMonths();
-            renderDays();
+            selectMonth('iyul'); // Bugungi iyul oyi fonida ishga tushadi
 
-            // Bugungi kun rekordini sozlash
+            // Bugungi kun kartasini to'ldirish (15-Iyul)
             const todayData = getRecord('iyul', 15);
-            document.getElementById('today-date-badge').innerText = `BUGUNGI REKORD (15-IYUL)`;
             document.getElementById('today-title').innerText = todayData.title;
             document.getElementById('today-desc').innerText = todayData.desc;
             document.getElementById('today-img').src = todayData.img;
