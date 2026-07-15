@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kunlik Ginnes Rekordlari Kalendari</title>
+    <!-- Tailwind CSS chiroyli dizayn uchun -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white font-sans min-h-screen flex flex-col justify-between">
+
+    <!-- Header -->
+    <header class="p-6 bg-gray-800 border-b border-yellow-500 text-center">
+        <h1 class="text-3xl md:text-5xl font-extrabold text-yellow-400 tracking-wider">🌟 GINNES REKORDLARI TAQVIMI 🌟</h1>
+        <p class="text-gray-400 mt-2">Yilning har bir kunidagi eng g'aroyib va hayratlanarli rekordlar dunyosi</p>
+    </header>
+
+    <!-- Asosiy Qism -->
+    <main class="max-w-6xl mx-auto p-6 w-full flex-grow">
+        
+        <!-- Bugungi Rekord Vitrinasi -->
+        <div id="today-record-card" class="bg-gradient-to-r from-yellow-600 to-amber-700 p-6 rounded-2xl shadow-2xl mb-10 text-center transform hover:scale-105 transition-all">
+            <h2 class="text-2xl font-bold mb-2">🗓️ Bugungi Kun Rekordi (<span id="current-date"></span>)</h2>
+            <p id="today-record-text" class="text-xl italic font-semibold">Yuklanmoqda...</p>
+        </div>
+
+        <!-- Oylar ro'yxati (Navigatsiya) -->
+        <div class="flex flex-wrap justify-center gap-2 mb-8">
+            <button onclick="showMonth('yanvar')" class="bg-gray-800 hover:bg-yellow-500 hover:text-black px-4 py-2 rounded-lg transition">Yanvar</button>
+            <button onclick="showMonth('fevral')" class="bg-gray-800 hover:bg-yellow-500 hover:text-black px-4 py-2 rounded-lg transition">Fevral</button>
+            <button onclick="showMonth('mart')" class="bg-gray-800 hover:bg-yellow-500 hover:text-black px-4 py-2 rounded-lg transition">Mart</button>
+            <button onclick="showMonth('aprel')" class="bg-gray-800 hover:bg-yellow-500 hover:text-black px-4 py-2 rounded-lg transition">Aprel</button>
+            <button onclick="showMonth('may')" class="bg-gray-800 hover:bg-yellow-500 hover:text-black px-4 py-2 rounded-lg transition">May</button>
+            <button onclick="showMonth('iyun')" class="bg-gray-800 hover:bg-yellow-500 hover:text-black px-4 py-2 rounded-lg transition">Iyun</button>
+            <button onclick="showMonth('iyul')" class="bg-gray-800 hover:bg-yellow-500 hover:text-black px-4 py-2 rounded-lg transition">Iyul</button>
+            <button onclick="showMonth('avgust')" class="bg-gray-800 hover:bg-yellow-500 hover:text-black px-4 py-2 rounded-lg transition">Avgust</button>
+            <button onclick="showMonth('sentabr')" class="bg-gray-800 hover:bg-yellow-500 hover:text-black px-4 py-2 rounded-lg transition">Sentabr</button>
+            <button onclick="showMonth('oktabr')" class="bg-gray-800 hover:bg-yellow-500 hover:text-black px-4 py-2 rounded-lg transition">Oktabr</button>
+            <button onclick="showMonth('noyabr')" class="bg-gray-800 hover:bg-yellow-500 hover:text-black px-4 py-2 rounded-lg transition">Noyabr</button>
+            <button onclick="showMonth('dekabr')" class="bg-gray-800 hover:bg-yellow-500 hover:text-black px-4 py-2 rounded-lg transition">Dekabr</button>
+        </div>
+
+        <!-- Kunlar chiqadigan joy -->
+        <h3 id="selected-month-title" class="text-2xl font-bold text-yellow-400 mb-4 text-center capitalize">Yanvar oyi kunlari</h3>
+        <div id="days-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-10 gap-3">
+            <!-- Kunlar JS orqali yaratiladi -->
+        </div>
+
+    </main>
+
+    <!-- Rekord Ko'rsatish Modali (Popup) -->
+    <div id="record-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4">
+        <div class="bg-gray-800 border-2 border-yellow-500 p-6 rounded-2xl max-w-md w-full relative">
+            <button onclick="closeModal()" class="absolute top-2 right-4 text-gray-400 hover:text-white text-2xl">&times;</button>
+            <h4 id="modal-date" class="text-xl font-bold text-yellow-400 mb-2">1-Yanvar</h4>
+            <p id="modal-record-text" class="text-lg text-gray-200">Bu kunda o'rnatilgan g'aroyib rekord bu yerda paydo bo'ladi.</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="p-4 bg-gray-800 text-center text-gray-500 border-t border-gray-700">
+        <p>&copy; 2026 Ginnes Rekordlari Kundaligi. Barcha huquqlar himoyalangan.</p>
+    </footer>
+
+    <!-- JavaScript qismi -->
+    <script>
+        // Vaqtincha ba'zi namunaviy ma'lumotlar (Baza vazifasini bajaradi)
+        const recordsData = {
+            "yanvar": {
+                "1": "Dunyoning eng katta yangi yil torti tayyorlandi (Og'irligi: 10 tonna).",
+                "2": "Muz ostida eng uzoq vaqt nafas olmasdan suzish rekordi o'rnatildi.",
+                "15": "Dunyo bo'ylab bir kunda eng ko'p kitob sotish rekordi."
+                // Qolgan kunlar ham shu tarzda davom etadi...
+            },
+            "iyul": {
+                "15": "Bugun dunyodagi eng tezkor va aqlli AI yordamchisi foydalanuvchi bilan super-sayt yaratish bo'yicha hamkorlikni boshladi! 😉"
+            }
+        };
+
+        const monthLengths = {
+            "yanvar": 31, "fevral": 29, "mart": 31, "aprel": 30, "may": 31, "iyun": 30,
+            "iyul": 31, "avgust": 31, "sentabr": 30, "oktabr": 31, "noyabr": 30, "dekabr": 31
+        };
+
+        let currentActiveMonth = "yanvar";
+
+        // Tanlangan oyning kunlarini ekranga chiqarish
+        function showMonth(monthName) {
+            currentActiveMonth = monthName;
+            document.getElementById("selected-month-title").innerText = monthName + " oyi kunlari";
+            const grid = document.getElementById("days-grid");
+            grid.innerHTML = ""; // Tozalash
+
+            const daysCount = monthLengths[monthName];
+            for (let i = 1; i <= daysCount; i++) {
+                const dayBtn = document.createElement("button");
+                dayBtn.innerText = i;
+                dayBtn.className = "bg-gray-800 hover:bg-yellow-600 text-white font-bold p-3 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-yellow-400";
+                dayBtn.onclick = () => openRecord(monthName, i);
+                grid.appendChild(dayBtn);
+            }
+        }
+
+        // Rekordni Modalda ochish
+        function openRecord(month, day) {
+            const monthData = recordsData[month] || {};
+            const record = monthData[day] || "Ushbu kun uchun rekord tez orada qo'shiladi! 🚀";
+            
+            document.getElementById("modal-date").innerText = `${day}-${month.charAt(0).toUpperCase() + month.slice(1)}`;
+            document.getElementById("modal-record-text").innerText = record;
+            document.getElementById("record-modal").classList.remove("hidden");
+        }
+
+        function closeModal() {
+            document.getElementById("record-modal").classList.add("hidden");
+        }
+
+        // Sahifa yuklanganda bugungi kunni ko'rsatish
+        window.onload = () => {
+            showMonth("yanvar"); // default ko'rinish
+            
+            // Bugungi sanani aniqlash
+            const bugun = new Date();
+            const oylar = ["yanvar", "fevral", "mart", "aprel", "may", "iyun", "iyul", "avgust", "sentabr", "oktabr", "noyabr", "dekabr"];
+            const bugungiKun = bugun.getDate();
+            const bugungiOy = oylar[bugun.getMonth()];
+
+            document.getElementById("current-date").innerText = `${bugungiKun}-${bugungiOy.charAt(0).toUpperCase() + bugungiOy.slice(1)}`;
+            
+            const bugungiRekord = (recordsData[bugungiOy] && recordsData[bugungiOy][bugungiKun]) 
+                || "Bugungi kun uchun ajoyib bir rekord qidirilmoqda... 🔎";
+            document.getElementById("today-record-text").innerText = bugungiRekord;
+        };
+    </script>
+</body>
+</html>

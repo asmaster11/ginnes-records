@@ -228,34 +228,93 @@
             }
         };
 
-        // GWR Ma'lumot shablonlari (Har bir rekord o'zining shaxsiy mos rasmiga ega)
+        // Katta ma'lumotlar bazasi (15 ta mutlaqo har xil va aniq mos rasmli rekordlar)
         const recordTemplates = [
             {
                 title: "Eng katta shokoladli mo''jiza",
                 desc: "Italiyalik mashhur ustalar tomonidan og'irligi 10180 kg bo'lgan ulkan shokoladli haykal yaratildi. Uni tayyorlashga bir oydan ortiq vaqt ketgan.",
-                img: "https://images.unsplash.com/photo-1575037614876-c38a4d44f5b8?w=800&auto=format&fit=crop&q=80" // Haqiqiy shokolad rasmi
+                img: "https://images.unsplash.com/photo-1575037614876-c38a4d44f5b8?w=800&auto=format&fit=crop&q=80"
             },
             {
                 title: "Muz ostida rekord darajadagi sho'ng'ish",
                 desc: "Xorvatiyalik g'avvos Budimir Sobat suv ostida maxsus kislorodsiz roppa-rosa 24 daqiqa-yu 37 soniya qolib, inson imkoniyatlarini yangiladi.",
-                img: "https://images.unsplash.com/photo-1478479405421-ce83c92fb3ba?w=800&auto=format&fit=crop&q=80" // Muz va sovuq suv osti g'avvosi
+                img: "https://images.unsplash.com/photo-1478479405421-ce83c92fb3ba?w=800&auto=format&fit=crop&q=80"
             },
             {
                 title: "Kosmosda eng uzoq vaqt qolish",
                 desc: "Kosmonavtlar ochiq koinot stantsiyasida jami bo'lib 878 kun yashab, sayyoradan tashqaridagi eng uzoq hayot rekordini o'rnatdilar.",
-                img: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=800&auto=format&fit=crop&q=80" // Haqiqiy koinot va kosmonavt
+                img: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=800&auto=format&fit=crop&q=80"
             },
             {
                 title: "Yer yuzidagi eng baland qum saroyi",
                 desc: "Yevropa sohilida balandligi 21 metrlik ajoyib qum saroyi qurildi. Qurilishda minglab tonna maxsus qum ishlatilgan.",
-                img: "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?w=800&auto=format&fit=crop&q=80" // Ulkan qum saroyi
+                img: "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?w=800&auto=format&fit=crop&q=80"
             },
             {
                 title: "Eng tez yig'ilgan kubik rubik",
                 desc: "Maks Park ismli yosh daho Rubik kubigini bor-yo'g'i 3 soniya-yu 13 soniya ichida to'liq yig'ib, aqldan ozdiruvchi rekord o'rnatdi.",
-                img: "https://images.unsplash.com/photo-1591991731833-b4807cf7ef94?w=800&auto=format&fit=crop&q=80" // Rubik Kubigi
+                img: "https://images.unsplash.com/photo-1591991731833-b4807cf7ef94?w=800&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Dunyodagi eng tez uchar poyezd",
+                desc: "Yaponiya magnit poyezdi L0 seriyasi sinov paytida soatiga 603 kilometr tezlikka erishib, relsdan tashqari eng tezkor poyezd bo'ldi.",
+                img: "https://images.unsplash.com/photo-1541417901775-48743128b3c6?w=800&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Eng ulkan glyutensiz pizza",
+                desc: "Rimlik oshpazlar tomonidan tayyorlangan ushbu pitsaning umumiy maydoni 1261 kvadrat metrni tashkil etib, mutlaq rekord o'rnatgan.",
+                img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Insoniyat yaratgan eng baland bino",
+                desc: "Dubayda joylashgan Burj Xalifa osmono'par binosi salkam 828 metr balandlikka ega bo'lib, dunyodagi eng baland bino hisoblanadi.",
+                img: "https://images.unsplash.com/photo-1582672060674-bc2bd808a8b5?w=800&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Mariana botig'iga eng chuqur sho'ng'ish",
+                desc: "Okean tubidagi eng chuqur nuqtaga, ya'ni 10928 metr chuqurlikka muvaffaqiyatli tushgan tadqiqot kemasi eng katta g'alaba sifatida qayd etildi.",
+                img: "https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=800&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Dunyodagi eng katta yashil o'rmon",
+                desc: "Amazonka daryosi bo'yidagi tropik o'rmonlar Yer yuzining 20 foiz kislorodini ishlab chiqaradi va dunyodagi eng yirik o'rmon hisoblanadi.",
+                img: "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Yerdagi eng qadimgi tirik daraxt",
+                desc: "Kaliforniya tog'larida joylashgan Metuselah nomli qadimgi qarag'ay daraxtining yoshi salkam 4850 yildan oshib ketgan.",
+                img: "https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=800&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Quruqlikdagi eng tezkor hayvon",
+                desc: "Gepard atigi 3 soniya ichida soatiga 100 kilometr tezlikka chiqib, tabiatning eng mukammal poygachisi ekanini isbotladi.",
+                img: "https://images.unsplash.com/photo-1517849845537-4d257902454a?w=800&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Eng ulkan issiq havo sharlari festivali",
+                desc: "Albukerke shahrida har yili o'tkaziladigan va bir vaqtning o'zida salkam 500 ta rang-barang havo sharlari osmonga ko'tariladigan rekord tadbirdir.",
+                img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Dunyodagi eng katta kitob xazinasi",
+                desc: "AQSh Kongressi kutubxonasi o'z bag'rida 170 milliondan ortiq noyob kitoblar va qog'ozli xaritalarni saqlab, eng katta kutubxona bo'lib qolmoqda.",
+                img: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Tabiatning eng baland sharsharasi",
+                desc: "Venesuelaning tropik o'rmonlarida joylashgan Anxel sharsharasi suvining tik tushish balandligi naqd 979 metrni tashkil etadi.",
+                img: "https://images.unsplash.com/photo-1432406186268-3c1a1402e57b?w=800&auto=format&fit=crop&q=80"
             }
         ];
+
+        // --- ARALASHTIRISH (SHUFFLE) FUNKSIYASI ---
+        // Sahifa har safar ochilganda rekordlarni mutlaqo tasodifiy ketma-ketlikka soladi.
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
 
         let currentMonth = 'yanvar';
         let currentUtterance = null;
@@ -351,18 +410,18 @@
         }
         animateParticles();
 
-        // Rekordni qaytaruvchi yangilangan va aniq bog'langan algoritm
+        // Rekordni qaytaruvchi yangilangan va aralashgan algoritm
         function getRecord(monthId, dayNum) {
             const mIndex = months.findIndex(m => m.id === monthId);
             const seed = (mIndex * 31) + parseInt(dayNum);
             
-            // Rekord andozasini tanlaymiz
+            // Rekord andozasini tanlaymiz (ro'yxat aralashtirilgani uchun har safar mutlaqo boshqa rekord chiqadi!)
             const template = recordTemplates[seed % recordTemplates.length];
 
             return {
                 title: `${template.title} #${100 + seed}`,
                 desc: template.desc + ` Ushbu ajoyib muvaffaqiyat rasmiy hakamlar tomonidan qayd etildi.`,
-                img: template.img // Endi rasm har doim andozadagi aniq rasm bilan bir xil bo'ladi!
+                img: template.img 
             };
         }
 
@@ -547,6 +606,9 @@
         });
 
         window.onload = () => {
+            // SAHIFA YUKLANGANDA REKORDLARNI TASODIFIY ARALASHTIRISH
+            shuffleArray(recordTemplates);
+
             selectMonth('iyul');
 
             const todayData = getRecord('iyul', 15);
