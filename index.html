@@ -531,5 +531,1137 @@
             document.getElementById('today-img').src = todayData.img;
         };
     </script>
+    <!-- JAVASCRIPT VA INTEGRAL INTERAKTIV TIZIM -->
+    <script>
+        const months = [
+            { id: 'yanvar', name: 'Yanvar', days: 31, season: 'winter' },
+            { id: 'fevral', name: 'Fevral', days: 29, season: 'winter' },
+            { id: 'mart', name: 'Mart', days: 31, season: 'spring' },
+            { id: 'aprel', name: 'Aprel', days: 30, season: 'spring' },
+            { id: 'may', name: 'May', days: 31, season: 'spring' },
+            { id: 'iyun', name: 'Iyun', days: 30, season: 'summer' },
+            { id: 'iyul', name: 'Iyul', days: 31, season: 'summer' },
+            { id: 'avgust', name: 'Avgust', days: 31, season: 'summer' },
+            { id: 'sentabr', name: 'Sentabr', days: 30, season: 'autumn' },
+            { id: 'oktabr', name: 'Oktabr', days: 31, season: 'autumn' },
+            { id: 'noyabr', name: 'Noyabr', days: 30, season: 'autumn' },
+            { id: 'dekabr', name: 'Dekabr', days: 31, season: 'winter' }
+        ];
+
+        // Sezonlar bo'yicha visual muhit sozlamalari
+        const seasonalStyles = {
+            winter: {
+                bg: "radial-gradient(circle at 50% 30%, #0d1b2a 0%, #010811 70%, #000000 100%)",
+                badge: "❄️ SHOV-SHUVLI QISH FASLI",
+                color: "#60a5fa",
+                glow: "rgba(96, 165, 250, 0.2)"
+            },
+            spring: {
+                bg: "radial-gradient(circle at 50% 30%, #0f2416 0%, #020a05 70%, #000000 100%)",
+                badge: "🌸 YAShIL LIFTING: BAHOR",
+                color: "#34d399",
+                glow: "rgba(52, 211, 153, 0.2)"
+            },
+            summer: {
+                bg: "radial-gradient(circle at 50% 30%, #291a03 0%, #0d0801 70%, #000000 100%)",
+                badge: "🔥 QAYNOQ VA G'AROYIB YOZ",
+                color: "#fbbf24",
+                glow: "rgba(251, 191, 36, 0.2)"
+            },
+            autumn: {
+                bg: "radial-gradient(circle at 50% 30%, #241107 0%, #0a0401 70%, #000000 100%)",
+                badge: "🍁 OLTIN REKORDLAR KUZI",
+                color: "#f97316",
+                glow: "rgba(249, 115, 22, 0.2)"
+            }
+        };
+
+        // GWR Ma'lumot shablonlari
+        const recordTemplates = [
+            {
+                title: "Eng katta shokoladli mo''jiza",
+                desc: "Italiyalik mashhur ustalar tomonidan og'irligi 10180 kg bo'lgan ulkan shokoladli haykal yaratildi. Uni tayyorlashga bir oydan ortiq vaqt ketgan.",
+                img: "https://images.unsplash.com/photo-1511381939415-e44015466834?w=600&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Muz ostida rekord darajadagi sho'ng'ish",
+                desc: "Xorvatiyalik g'avvos Budimir Sobat suv ostida maxsus kislorodsiz roppa-rosa 24 daqiqa-yu 37 soniya qolib, inson imkoniyatlarini yangiladi.",
+                img: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Kosmosda eng uzoq vaqt qolish",
+                desc: "Kosmonavtlar ochiq koinot stantsiyasida jami bo'lib 878 kun yashab, sayyoradan tashqaridagi eng uzoq hayot rekordini o'rnatdilar.",
+                img: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Yer yuzidagi eng baland qum saroyi",
+                desc: "Yevropa sohilida balandligi 21 metrlik ajoyib qum saroyi qurildi. Qurilishda minglab tonna maxsus qum ishlatilgan.",
+                img: "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?w=600&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Eng tez yig'ilgan kubik rubik",
+                desc: "Maks Park ismli yosh daho Rubik kubigini bor-yo'g'i 3 soniya-yu 13 soniya ichida to'liq yig'ib, aqldan ozdiruvchi rekord o'rnatdi.",
+                img: "https://images.unsplash.com/photo-1591991731833-b4807cf7ef94?w=600&auto=format&fit=crop&q=80"
+            }
+        ];
+
+        const fallbackImages = [
+            "https://images.unsplash.com/photo-1467810563316-b5476525c0f9?w=600&auto=format&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=600&auto=format&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&auto=format&fit=crop&q=80"
+        ];
+
+        let currentMonth = 'yanvar';
+        let currentUtterance = null;
+        let subtitleInterval = null;
+
+        // Dinamik zarrachalar generatori (Canvas)
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor(type) {
+                this.type = type;
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height - canvas.height;
+                this.vx = Math.random() * 1.5 - 0.75;
+                this.vy = Math.random() * 2 + 1;
+                this.size = Math.random() * 3 + 1;
+                this.color = '#ffffff';
+                this.angle = Math.random() * Math.PI * 2;
+                
+                if (type === 'spring') {
+                    this.color = `rgba(244, 143, 177, ${Math.random() * 0.7 + 0.3})`;
+                    this.size = Math.random() * 6 + 3;
+                } else if (type === 'autumn') {
+                    this.color = `rgba(${200 + Math.random() * 55}, ${100 + Math.random() * 50}, 20, ${Math.random() * 0.7 + 0.3})`;
+                    this.size = Math.random() * 8 + 4;
+                } else if (type === 'summer') {
+                    this.color = `rgba(251, 191, 36, ${Math.random() * 0.4})`;
+                    this.vy = Math.random() * 0.5 + 0.2;
+                    this.size = Math.random() * 10 + 5;
+                }
+            }
+
+            update() {
+                this.y += this.vy;
+                this.x += this.vx;
+                this.angle += 0.01;
+
+                if (this.y > canvas.height) {
+                    this.y = -10;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                if (this.type === 'winter') {
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+                    ctx.fill();
+                } else if (this.type === 'summer') {
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = '#fbbf24';
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                } else {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.angle);
+                    ctx.ellipse(0, 0, this.size, this.size / 2, 0, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+        }
+
+        function initParticles(season) {
+            particles = [];
+            let count = season === 'winter' ? 80 : 40;
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle(season));
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // Rekordni qaytaruvchi integral algoritm
+        function getRecord(monthId, dayNum) {
+            const mIndex = months.findIndex(m => m.id === monthId);
+            const seed = (mIndex * 31) + parseInt(dayNum);
+            const template = recordTemplates[seed % recordTemplates.length];
+            const rasm = fallbackImages[seed % fallbackImages.length];
+
+            return {
+                title: `${template.title} #${100 + seed}`,
+                desc: template.desc + ` Ushbu ajoyib muvaffaqiyat rasmiy hakamlar tomonidan qayd etildi.`,
+                img: rasm
+            };
+        }
+
+        // Oylarni vizual va faslga qarab yangilab chiqarish
+        function renderMonths() {
+            const container = document.getElementById('months-container');
+            container.innerHTML = '';
+            months.forEach(m => {
+                const btn = document.createElement('button');
+                btn.innerText = m.name;
+                
+                const style = seasonalStyles[m.season];
+                btn.className = `px-4 py-2 rounded-xl glass-panel text-xs transition-all duration-300 font-semibold text-gray-400 hover:text-white neon-hover`;
+                
+                btn.style.setProperty('--accent-color', style.color);
+                btn.style.setProperty('--accent-glow', style.glow);
+
+                if (m.id === currentMonth) {
+                    btn.style.background = style.color;
+                    btn.style.color = '#000000';
+                    btn.style.borderColor = style.color;
+                    btn.style.boxShadow = `0 10px 25px ${style.glow}`;
+                }
+
+                btn.onclick = () => selectMonth(m.id);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectMonth(monthId) {
+            currentMonth = monthId;
+            const monthObj = months.find(m => m.id === monthId);
+            const style = seasonalStyles[monthObj.season];
+
+            document.body.style.background = style.bg;
+            document.getElementById('season-badge').innerText = style.badge;
+            document.getElementById('season-badge').style.color = style.color;
+            document.getElementById('selected-month-title').innerText = monthObj.name + " Oyi";
+
+            initParticles(monthObj.season);
+            renderMonths();
+            renderDays();
+        }
+
+        // Kunlarni chiqarish
+        function renderDays() {
+            const grid = document.getElementById('days-grid');
+            grid.innerHTML = '';
+            const monthObj = months.find(m => m.id === currentMonth);
+            const style = seasonalStyles[monthObj.season];
+            
+            for (let i = 1; i <= monthObj.days; i++) {
+                const btn = document.createElement('button');
+                btn.className = `group relative h-16 rounded-2xl glass-panel flex flex-col items-center justify-center transition-all duration-300 neon-hover cursor-pointer`;
+                btn.style.setProperty('--accent-color', style.color);
+                btn.style.setProperty('--accent-glow', style.glow);
+
+                btn.innerHTML = `
+                    <span class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full" style="background-color: ${style.color}"></span>
+                    <span class="text-[8px] text-gray-500 font-tech tracking-widest">KUN</span>
+                    <span class="text-lg font-bold text-white group-hover:text-amber-400 transition">${i}</span>
+                `;
+                
+                btn.onclick = () => openModal(currentMonth, i);
+                grid.appendChild(btn);
+            }
+        }
+
+        // --- RAQAMLARNI O'ZBEKCHA SO'ZGA O'GIRISH TIZIMI ---
+        function raqamniMatngaOgir(num) {
+            const birgacha = ["", "bir", "ikki", "uch", "to'rt", "besh", "olti", "yetti", "sakkiz", "to'qqiz"];
+            const onlar = ["", "o'n", "yigirma", "o'ttiz", "qirq", "ellik", "oltmish", "yetmish", "sakkizon", "to'qson"];
+            
+            num = parseInt(num);
+            if (num === 0) return "nol";
+            
+            let words = "";
+            
+            if (Math.floor(num / 1000000) > 0) {
+                words += raqamniMatngaOgir(Math.floor(num / 1000000)) + " million ";
+                num %= 1000000;
+            }
+            
+            if (Math.floor(num / 1000) > 0) {
+                words += raqamniMatngaOgir(Math.floor(num / 1000)) + " ming ";
+                num %= 1000;
+            }
+            
+            if (Math.floor(num / 100) > 0) {
+                words += birgacha[Math.floor(num / 100)] + " yuz ";
+                num %= 100;
+            }
+            
+            if (num > 0) {
+                if (num < 10) {
+                    words += birgacha[num];
+                } else {
+                    words += onlar[Math.floor(num / 10)] + " " + birgacha[num % 10];
+                }
+            }
+            
+            return words.trim();
+        }
+
+        function matnniTayyorlash(text) {
+            let yangiMatn = text.replace(/\d+/g, (match) => {
+                return raqamniMatngaOgir(match);
+            });
+            
+            yangiMatn = yangiMatn.replace(/o'/g, "o").replace(/g'/g, "g").replace(/sh/g, "sh").replace(/ch/g, "ch");
+            return yangiMatn;
+        }
+
+        let currentWords = [];
+        let activeWordIndex = -1;
+
+        function openModal(month, day) {
+            const monthObj = months.find(m => m.id === month);
+            const data = getRecord(month, day);
+
+            document.getElementById('modal-date').innerText = `${day}-${monthObj.name.toUpperCase()}`;
+            document.getElementById('modal-title').innerText = data.title;
+            document.getElementById('modal-img').src = data.img;
+
+            const descText = data.desc;
+            currentWords = descText.split(" ");
+            const subtitleArea = document.getElementById('subtitles-area');
+            subtitleArea.innerHTML = currentWords.map((word, idx) => `<span class="word-span" id="word-${idx}">${word}</span>`).join("");
+
+            document.getElementById('record-modal').classList.remove('hidden');
+
+            startSpeech(descText);
+        }
+
+        function startSpeech(text) {
+            window.speechSynthesis.cancel();
+            if (subtitleInterval) clearInterval(subtitleInterval);
+
+            const eshitiladiganMatn = matnniTayyorlash(text);
+            currentUtterance = new SpeechSynthesisUtterance(eshitiladiganMatn);
+            
+            currentUtterance.rate = 0.8; 
+            
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(v => v.lang.startsWith('tr') || v.lang.startsWith('ru')) || voices[0];
+            if (preferredVoice) currentUtterance.voice = preferredVoice;
+
+            activeWordIndex = 0;
+            const wordsCount = currentWords.length;
+            const durationPerWord = (text.length * 75) / wordsCount; 
+
+            subtitleInterval = setInterval(() => {
+                if (activeWordIndex < wordsCount) {
+                    if (activeWordIndex > 0) {
+                        document.getElementById(`word-${activeWordIndex - 1}`).classList.remove('word-active');
+                    }
+                    const currentSpan = document.getElementById(`word-${activeWordIndex}`);
+                    if (currentSpan) currentSpan.classList.add('word-active');
+                    activeWordIndex++;
+                } else {
+                    clearInterval(subtitleInterval);
+                }
+            }, durationPerWord);
+
+            window.speechSynthesis.speak(currentUtterance);
+        }
+
+        function toggleSpeech() {
+            const spans = document.querySelectorAll('.word-span');
+            const words = Array.from(spans).map(s => s.innerText);
+            startSpeech(words.join(" "));
+        }
+
+        function closeModal() {
+            window.speechSynthesis.cancel();
+            if (subtitleInterval) clearInterval(subtitleInterval);
+            document.getElementById('record-modal').classList.add('hidden');
+        }
+
+        document.getElementById('record-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        window.onload = () => {
+            selectMonth('iyul');
+
+            const todayData = getRecord('iyul', 15);
+            document.getElementById('today-title').innerText = todayData.title;
+            document.getElementById('today-desc').innerText = todayData.desc;
+            document.getElementById('today-img').src = todayData.img;
+        };
+    </script>
+    <!-- JAVASCRIPT VA INTEGRAL INTERAKTIV TIZIM -->
+    <script>
+        const months = [
+            { id: 'yanvar', name: 'Yanvar', days: 31, season: 'winter' },
+            { id: 'fevral', name: 'Fevral', days: 29, season: 'winter' },
+            { id: 'mart', name: 'Mart', days: 31, season: 'spring' },
+            { id: 'aprel', name: 'Aprel', days: 30, season: 'spring' },
+            { id: 'may', name: 'May', days: 31, season: 'spring' },
+            { id: 'iyun', name: 'Iyun', days: 30, season: 'summer' },
+            { id: 'iyul', name: 'Iyul', days: 31, season: 'summer' },
+            { id: 'avgust', name: 'Avgust', days: 31, season: 'summer' },
+            { id: 'sentabr', name: 'Sentabr', days: 30, season: 'autumn' },
+            { id: 'oktabr', name: 'Oktabr', days: 31, season: 'autumn' },
+            { id: 'noyabr', name: 'Noyabr', days: 30, season: 'autumn' },
+            { id: 'dekabr', name: 'Dekabr', days: 31, season: 'winter' }
+        ];
+
+        // Sezonlar bo'yicha visual muhit sozlamalari
+        const seasonalStyles = {
+            winter: {
+                bg: "radial-gradient(circle at 50% 30%, #0d1b2a 0%, #010811 70%, #000000 100%)",
+                badge: "❄️ SHOV-SHUVLI QISH FASLI",
+                color: "#60a5fa",
+                glow: "rgba(96, 165, 250, 0.2)"
+            },
+            spring: {
+                bg: "radial-gradient(circle at 50% 30%, #0f2416 0%, #020a05 70%, #000000 100%)",
+                badge: "🌸 YAShIL LIFTING: BAHOR",
+                color: "#34d399",
+                glow: "rgba(52, 211, 153, 0.2)"
+            },
+            summer: {
+                bg: "radial-gradient(circle at 50% 30%, #291a03 0%, #0d0801 70%, #000000 100%)",
+                badge: "🔥 QAYNOQ VA G'AROYIB YOZ",
+                color: "#fbbf24",
+                glow: "rgba(251, 191, 36, 0.2)"
+            },
+            autumn: {
+                bg: "radial-gradient(circle at 50% 30%, #241107 0%, #0a0401 70%, #000000 100%)",
+                badge: "🍁 OLTIN REKORDLAR KUZI",
+                color: "#f97316",
+                glow: "rgba(249, 115, 22, 0.2)"
+            }
+        };
+
+        // GWR Ma'lumot shablonlari
+        const recordTemplates = [
+            {
+                title: "Eng katta shokoladli mo''jiza",
+                desc: "Italiyalik mashhur ustalar tomonidan og'irligi 10180 kg bo'lgan ulkan shokoladli haykal yaratildi. Uni tayyorlashga bir oydan ortiq vaqt ketgan.",
+                img: "https://images.unsplash.com/photo-1511381939415-e44015466834?w=600&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Muz ostida rekord darajadagi sho'ng'ish",
+                desc: "Xorvatiyalik g'avvos Budimir Sobat suv ostida maxsus kislorodsiz roppa-rosa 24 daqiqa-yu 37 soniya qolib, inson imkoniyatlarini yangiladi.",
+                img: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Kosmosda eng uzoq vaqt qolish",
+                desc: "Kosmonavtlar ochiq koinot stantsiyasida jami bo'lib 878 kun yashab, sayyoradan tashqaridagi eng uzoq hayot rekordini o'rnatdilar.",
+                img: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Yer yuzidagi eng baland qum saroyi",
+                desc: "Yevropa sohilida balandligi 21 metrlik ajoyib qum saroyi qurildi. Qurilishda minglab tonna maxsus qum ishlatilgan.",
+                img: "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?w=600&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Eng tez yig'ilgan kubik rubik",
+                desc: "Maks Park ismli yosh daho Rubik kubigini bor-yo'g'i 3 soniya-yu 13 soniya ichida to'liq yig'ib, aqldan ozdiruvchi rekord o'rnatdi.",
+                img: "https://images.unsplash.com/photo-1591991731833-b4807cf7ef94?w=600&auto=format&fit=crop&q=80"
+            }
+        ];
+
+        const fallbackImages = [
+            "https://images.unsplash.com/photo-1467810563316-b5476525c0f9?w=600&auto=format&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=600&auto=format&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&auto=format&fit=crop&q=80"
+        ];
+
+        let currentMonth = 'yanvar';
+        let currentUtterance = null;
+        let subtitleInterval = null;
+
+        // Dinamik zarrachalar generatori (Canvas)
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor(type) {
+                this.type = type;
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height - canvas.height;
+                this.vx = Math.random() * 1.5 - 0.75;
+                this.vy = Math.random() * 2 + 1;
+                this.size = Math.random() * 3 + 1;
+                this.color = '#ffffff';
+                this.angle = Math.random() * Math.PI * 2;
+                
+                if (type === 'spring') {
+                    this.color = `rgba(244, 143, 177, ${Math.random() * 0.7 + 0.3})`;
+                    this.size = Math.random() * 6 + 3;
+                } else if (type === 'autumn') {
+                    this.color = `rgba(${200 + Math.random() * 55}, ${100 + Math.random() * 50}, 20, ${Math.random() * 0.7 + 0.3})`;
+                    this.size = Math.random() * 8 + 4;
+                } else if (type === 'summer') {
+                    this.color = `rgba(251, 191, 36, ${Math.random() * 0.4})`;
+                    this.vy = Math.random() * 0.5 + 0.2;
+                    this.size = Math.random() * 10 + 5;
+                }
+            }
+
+            update() {
+                this.y += this.vy;
+                this.x += this.vx;
+                this.angle += 0.01;
+
+                if (this.y > canvas.height) {
+                    this.y = -10;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                if (this.type === 'winter') {
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+                    ctx.fill();
+                } else if (this.type === 'summer') {
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = '#fbbf24';
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                } else {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.angle);
+                    ctx.ellipse(0, 0, this.size, this.size / 2, 0, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+        }
+
+        function initParticles(season) {
+            particles = [];
+            let count = season === 'winter' ? 80 : 40;
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle(season));
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // Rekordni qaytaruvchi integral algoritm
+        function getRecord(monthId, dayNum) {
+            const mIndex = months.findIndex(m => m.id === monthId);
+            const seed = (mIndex * 31) + parseInt(dayNum);
+            const template = recordTemplates[seed % recordTemplates.length];
+            const rasm = fallbackImages[seed % fallbackImages.length];
+
+            return {
+                title: `${template.title} #${100 + seed}`,
+                desc: template.desc + ` Ushbu ajoyib muvaffaqiyat rasmiy hakamlar tomonidan qayd etildi.`,
+                img: rasm
+            };
+        }
+
+        // Oylarni vizual va faslga qarab yangilab chiqarish
+        function renderMonths() {
+            const container = document.getElementById('months-container');
+            container.innerHTML = '';
+            months.forEach(m => {
+                const btn = document.createElement('button');
+                btn.innerText = m.name;
+                
+                const style = seasonalStyles[m.season];
+                btn.className = `px-4 py-2 rounded-xl glass-panel text-xs transition-all duration-300 font-semibold text-gray-400 hover:text-white neon-hover`;
+                
+                btn.style.setProperty('--accent-color', style.color);
+                btn.style.setProperty('--accent-glow', style.glow);
+
+                if (m.id === currentMonth) {
+                    btn.style.background = style.color;
+                    btn.style.color = '#000000';
+                    btn.style.borderColor = style.color;
+                    btn.style.boxShadow = `0 10px 25px ${style.glow}`;
+                }
+
+                btn.onclick = () => selectMonth(m.id);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectMonth(monthId) {
+            currentMonth = monthId;
+            const monthObj = months.find(m => m.id === monthId);
+            const style = seasonalStyles[monthObj.season];
+
+            document.body.style.background = style.bg;
+            document.getElementById('season-badge').innerText = style.badge;
+            document.getElementById('season-badge').style.color = style.color;
+            document.getElementById('selected-month-title').innerText = monthObj.name + " Oyi";
+
+            initParticles(monthObj.season);
+            renderMonths();
+            renderDays();
+        }
+
+        // Kunlarni chiqarish
+        function renderDays() {
+            const grid = document.getElementById('days-grid');
+            grid.innerHTML = '';
+            const monthObj = months.find(m => m.id === currentMonth);
+            const style = seasonalStyles[monthObj.season];
+            
+            for (let i = 1; i <= monthObj.days; i++) {
+                const btn = document.createElement('button');
+                btn.className = `group relative h-16 rounded-2xl glass-panel flex flex-col items-center justify-center transition-all duration-300 neon-hover cursor-pointer`;
+                btn.style.setProperty('--accent-color', style.color);
+                btn.style.setProperty('--accent-glow', style.glow);
+
+                btn.innerHTML = `
+                    <span class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full" style="background-color: ${style.color}"></span>
+                    <span class="text-[8px] text-gray-500 font-tech tracking-widest">KUN</span>
+                    <span class="text-lg font-bold text-white group-hover:text-amber-400 transition">${i}</span>
+                `;
+                
+                btn.onclick = () => openModal(currentMonth, i);
+                grid.appendChild(btn);
+            }
+        }
+
+        // --- RAQAMLARNI O'ZBEKCHA SO'ZGA O'GIRISH TIZIMI ---
+        function raqamniMatngaOgir(num) {
+            const birgacha = ["", "bir", "ikki", "uch", "to'rt", "besh", "olti", "yetti", "sakkiz", "to'qqiz"];
+            const onlar = ["", "o'n", "yigirma", "o'ttiz", "qirq", "ellik", "oltmish", "yetmish", "sakkizon", "to'qson"];
+            
+            num = parseInt(num);
+            if (num === 0) return "nol";
+            
+            let words = "";
+            
+            if (Math.floor(num / 1000000) > 0) {
+                words += raqamniMatngaOgir(Math.floor(num / 1000000)) + " million ";
+                num %= 1000000;
+            }
+            
+            if (Math.floor(num / 1000) > 0) {
+                words += raqamniMatngaOgir(Math.floor(num / 1000)) + " ming ";
+                num %= 1000;
+            }
+            
+            if (Math.floor(num / 100) > 0) {
+                words += birgacha[Math.floor(num / 100)] + " yuz ";
+                num %= 100;
+            }
+            
+            if (num > 0) {
+                if (num < 10) {
+                    words += birgacha[num];
+                } else {
+                    words += onlar[Math.floor(num / 10)] + " " + birgacha[num % 10];
+                }
+            }
+            
+            return words.trim();
+        }
+
+        function matnniTayyorlash(text) {
+            let yangiMatn = text.replace(/\d+/g, (match) => {
+                return raqamniMatngaOgir(match);
+            });
+            
+            yangiMatn = yangiMatn.replace(/o'/g, "o").replace(/g'/g, "g").replace(/sh/g, "sh").replace(/ch/g, "ch");
+            return yangiMatn;
+        }
+
+        let currentWords = [];
+        let activeWordIndex = -1;
+
+        function openModal(month, day) {
+            const monthObj = months.find(m => m.id === month);
+            const data = getRecord(month, day);
+
+            document.getElementById('modal-date').innerText = `${day}-${monthObj.name.toUpperCase()}`;
+            document.getElementById('modal-title').innerText = data.title;
+            document.getElementById('modal-img').src = data.img;
+
+            const descText = data.desc;
+            currentWords = descText.split(" ");
+            const subtitleArea = document.getElementById('subtitles-area');
+            subtitleArea.innerHTML = currentWords.map((word, idx) => `<span class="word-span" id="word-${idx}">${word}</span>`).join("");
+
+            document.getElementById('record-modal').classList.remove('hidden');
+
+            startSpeech(descText);
+        }
+
+        function startSpeech(text) {
+            window.speechSynthesis.cancel();
+            if (subtitleInterval) clearInterval(subtitleInterval);
+
+            const eshitiladiganMatn = matnniTayyorlash(text);
+            currentUtterance = new SpeechSynthesisUtterance(eshitiladiganMatn);
+            
+            currentUtterance.rate = 0.8; 
+            
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(v => v.lang.startsWith('tr') || v.lang.startsWith('ru')) || voices[0];
+            if (preferredVoice) currentUtterance.voice = preferredVoice;
+
+            activeWordIndex = 0;
+            const wordsCount = currentWords.length;
+            const durationPerWord = (text.length * 75) / wordsCount; 
+
+            subtitleInterval = setInterval(() => {
+                if (activeWordIndex < wordsCount) {
+                    if (activeWordIndex > 0) {
+                        document.getElementById(`word-${activeWordIndex - 1}`).classList.remove('word-active');
+                    }
+                    const currentSpan = document.getElementById(`word-${activeWordIndex}`);
+                    if (currentSpan) currentSpan.classList.add('word-active');
+                    activeWordIndex++;
+                } else {
+                    clearInterval(subtitleInterval);
+                }
+            }, durationPerWord);
+
+            window.speechSynthesis.speak(currentUtterance);
+        }
+
+        function toggleSpeech() {
+            const spans = document.querySelectorAll('.word-span');
+            const words = Array.from(spans).map(s => s.innerText);
+            startSpeech(words.join(" "));
+        }
+
+        function closeModal() {
+            window.speechSynthesis.cancel();
+            if (subtitleInterval) clearInterval(subtitleInterval);
+            document.getElementById('record-modal').classList.add('hidden');
+        }
+
+        document.getElementById('record-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        window.onload = () => {
+            selectMonth('iyul');
+
+            const todayData = getRecord('iyul', 15);
+            document.getElementById('today-title').innerText = todayData.title;
+            document.getElementById('today-desc').innerText = todayData.desc;
+            document.getElementById('today-img').src = todayData.img;
+        };
+    </script>
+<!-- JAVASCRIPT VA INTEGRAL INTERAKTIV TIZIM -->
+    <script>
+        const months = [
+            { id: 'yanvar', name: 'Yanvar', days: 31, season: 'winter' },
+            { id: 'fevral', name: 'Fevral', days: 29, season: 'winter' },
+            { id: 'mart', name: 'Mart', days: 31, season: 'spring' },
+            { id: 'aprel', name: 'Aprel', days: 30, season: 'spring' },
+            { id: 'may', name: 'May', days: 31, season: 'spring' },
+            { id: 'iyun', name: 'Iyun', days: 30, season: 'summer' },
+            { id: 'iyul', name: 'Iyul', days: 31, season: 'summer' },
+            { id: 'avgust', name: 'Avgust', days: 31, season: 'summer' },
+            { id: 'sentabr', name: 'Sentabr', days: 30, season: 'autumn' },
+            { id: 'oktabr', name: 'Oktabr', days: 31, season: 'autumn' },
+            { id: 'noyabr', name: 'Noyabr', days: 30, season: 'autumn' },
+            { id: 'dekabr', name: 'Dekabr', days: 31, season: 'winter' }
+        ];
+
+        // Sezonlar bo'yicha visual muhit sozlamalari
+        const seasonalStyles = {
+            winter: {
+                bg: "radial-gradient(circle at 50% 30%, #0d1b2a 0%, #010811 70%, #000000 100%)",
+                badge: "❄️ SHOV-SHUVLI QISH FASLI",
+                color: "#60a5fa",
+                glow: "rgba(96, 165, 250, 0.2)"
+            },
+            spring: {
+                bg: "radial-gradient(circle at 50% 30%, #0f2416 0%, #020a05 70%, #000000 100%)",
+                badge: "🌸 YAShIL LIFTING: BAHOR",
+                color: "#34d399",
+                glow: "rgba(52, 211, 153, 0.2)"
+            },
+            summer: {
+                bg: "radial-gradient(circle at 50% 30%, #291a03 0%, #0d0801 70%, #000000 100%)",
+                badge: "🔥 QAYNOQ VA G'AROYIB YOZ",
+                color: "#fbbf24",
+                glow: "rgba(251, 191, 36, 0.2)"
+            },
+            autumn: {
+                bg: "radial-gradient(circle at 50% 30%, #241107 0%, #0a0401 70%, #000000 100%)",
+                badge: "🍁 OLTIN REKORDLAR KUZI",
+                color: "#f97316",
+                glow: "rgba(249, 115, 22, 0.2)"
+            }
+        };
+
+        // GWR Ma'lumot shablonlari
+        const recordTemplates = [
+            {
+                title: "Eng katta shokoladli mo''jiza",
+                desc: "Italiyalik mashhur ustalar tomonidan og'irligi 10180 kg bo'lgan ulkan shokoladli haykal yaratildi. Uni tayyorlashga bir oydan ortiq vaqt ketgan.",
+                img: "https://images.unsplash.com/photo-1511381939415-e44015466834?w=600&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Muz ostida rekord darajadagi sho'ng'ish",
+                desc: "Xorvatiyalik g'avvos Budimir Sobat suv ostida maxsus kislorodsiz roppa-rosa 24 daqiqa-yu 37 soniya qolib, inson imkoniyatlarini yangiladi.",
+                img: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Kosmosda eng uzoq vaqt qolish",
+                desc: "Kosmonavtlar ochiq koinot stantsiyasida jami bo'lib 878 kun yashab, sayyoradan tashqaridagi eng uzoq hayot rekordini o'rnatdilar.",
+                img: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Yer yuzidagi eng baland qum saroyi",
+                desc: "Yevropa sohilida balandligi 21 metrlik ajoyib qum saroyi qurildi. Qurilishda minglab tonna maxsus qum ishlatilgan.",
+                img: "https://images.unsplash.com/photo-1509114397022-ed747cca3f65?w=600&auto=format&fit=crop&q=80"
+            },
+            {
+                title: "Eng tez yig'ilgan kubik rubik",
+                desc: "Maks Park ismli yosh daho Rubik kubigini bor-yo'g'i 3 soniya-yu 13 soniya ichida to'liq yig'ib, aqldan ozdiruvchi rekord o'rnatdi.",
+                img: "https://images.unsplash.com/photo-1591991731833-b4807cf7ef94?w=600&auto=format&fit=crop&q=80"
+            }
+        ];
+
+        const fallbackImages = [
+            "https://images.unsplash.com/photo-1467810563316-b5476525c0f9?w=600&auto=format&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=600&auto=format&fit=crop&q=80",
+            "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&auto=format&fit=crop&q=80"
+        ];
+
+        let currentMonth = 'yanvar';
+        let currentUtterance = null;
+        let subtitleInterval = null;
+
+        // Dinamik zarrachalar generatori (Canvas)
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor(type) {
+                this.type = type;
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height - canvas.height;
+                this.vx = Math.random() * 1.5 - 0.75;
+                this.vy = Math.random() * 2 + 1;
+                this.size = Math.random() * 3 + 1;
+                this.color = '#ffffff';
+                this.angle = Math.random() * Math.PI * 2;
+                
+                if (type === 'spring') {
+                    this.color = `rgba(244, 143, 177, ${Math.random() * 0.7 + 0.3})`;
+                    this.size = Math.random() * 6 + 3;
+                } else if (type === 'autumn') {
+                    this.color = `rgba(${200 + Math.random() * 55}, ${100 + Math.random() * 50}, 20, ${Math.random() * 0.7 + 0.3})`;
+                    this.size = Math.random() * 8 + 4;
+                } else if (type === 'summer') {
+                    this.color = `rgba(251, 191, 36, ${Math.random() * 0.4})`;
+                    this.vy = Math.random() * 0.5 + 0.2;
+                    this.size = Math.random() * 10 + 5;
+                }
+            }
+
+            update() {
+                this.y += this.vy;
+                this.x += this.vx;
+                this.angle += 0.01;
+
+                if (this.y > canvas.height) {
+                    this.y = -10;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                if (this.type === 'winter') {
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+                    ctx.fill();
+                } else if (this.type === 'summer') {
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = '#fbbf24';
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                } else {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.angle);
+                    ctx.ellipse(0, 0, this.size, this.size / 2, 0, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+        }
+
+        function initParticles(season) {
+            particles = [];
+            let count = season === 'winter' ? 80 : 40;
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle(season));
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // Rekordni qaytaruvchi integral algoritm
+        function getRecord(monthId, dayNum) {
+            const mIndex = months.findIndex(m => m.id === monthId);
+            const seed = (mIndex * 31) + parseInt(dayNum);
+            const template = recordTemplates[seed % recordTemplates.length];
+            const rasm = fallbackImages[seed % fallbackImages.length];
+
+            return {
+                title: `${template.title} #${100 + seed}`,
+                desc: template.desc + ` Ushbu ajoyib muvaffaqiyat rasmiy hakamlar tomonidan qayd etildi.`,
+                img: rasm
+            };
+        }
+
+        // Oylarni vizual va faslga qarab yangilab chiqarish
+        function renderMonths() {
+            const container = document.getElementById('months-container');
+            container.innerHTML = '';
+            months.forEach(m => {
+                const btn = document.createElement('button');
+                btn.innerText = m.name;
+                
+                const style = seasonalStyles[m.season];
+                btn.className = `px-4 py-2 rounded-xl glass-panel text-xs transition-all duration-300 font-semibold text-gray-400 hover:text-white neon-hover`;
+                
+                btn.style.setProperty('--accent-color', style.color);
+                btn.style.setProperty('--accent-glow', style.glow);
+
+                if (m.id === currentMonth) {
+                    btn.style.background = style.color;
+                    btn.style.color = '#000000';
+                    btn.style.borderColor = style.color;
+                    btn.style.boxShadow = `0 10px 25px ${style.glow}`;
+                }
+
+                btn.onclick = () => selectMonth(m.id);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectMonth(monthId) {
+            currentMonth = monthId;
+            const monthObj = months.find(m => m.id === monthId);
+            const style = seasonalStyles[monthObj.season];
+
+            document.body.style.background = style.bg;
+            document.getElementById('season-badge').innerText = style.badge;
+            document.getElementById('season-badge').style.color = style.color;
+            document.getElementById('selected-month-title').innerText = monthObj.name + " Oyi";
+
+            initParticles(monthObj.season);
+            renderMonths();
+            renderDays();
+        }
+
+        // Kunlarni chiqarish
+        function renderDays() {
+            const grid = document.getElementById('days-grid');
+            grid.innerHTML = '';
+            const monthObj = months.find(m => m.id === currentMonth);
+            const style = seasonalStyles[monthObj.season];
+            
+            for (let i = 1; i <= monthObj.days; i++) {
+                const btn = document.createElement('button');
+                btn.className = `group relative h-16 rounded-2xl glass-panel flex flex-col items-center justify-center transition-all duration-300 neon-hover cursor-pointer`;
+                btn.style.setProperty('--accent-color', style.color);
+                btn.style.setProperty('--accent-glow', style.glow);
+
+                btn.innerHTML = `
+                    <span class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full" style="background-color: ${style.color}"></span>
+                    <span class="text-[8px] text-gray-500 font-tech tracking-widest">KUN</span>
+                    <span class="text-lg font-bold text-white group-hover:text-amber-400 transition">${i}</span>
+                `;
+                
+                btn.onclick = () => openModal(currentMonth, i);
+                grid.appendChild(btn);
+            }
+        }
+
+        // --- RAQAMLARNI O'ZBEKCHA SO'ZGA O'GIRISH TIZIMI ---
+        function raqamniMatngaOgir(num) {
+            const birgacha = ["", "bir", "ikki", "uch", "to'rt", "besh", "olti", "yetti", "sakkiz", "to'qqiz"];
+            const onlar = ["", "o'n", "yigirma", "o'ttiz", "qirq", "ellik", "oltmish", "yetmish", "sakkizon", "to'qson"];
+            
+            num = parseInt(num);
+            if (num === 0) return "nol";
+            
+            let words = "";
+            
+            if (Math.floor(num / 1000000) > 0) {
+                words += raqamniMatngaOgir(Math.floor(num / 1000000)) + " million ";
+                num %= 1000000;
+            }
+            
+            if (Math.floor(num / 1000) > 0) {
+                words += raqamniMatngaOgir(Math.floor(num / 1000)) + " ming ";
+                num %= 1000;
+            }
+            
+            if (Math.floor(num / 100) > 0) {
+                words += birgacha[Math.floor(num / 100)] + " yuz ";
+                num %= 100;
+            }
+            
+            if (num > 0) {
+                if (num < 10) {
+                    words += birgacha[num];
+                } else {
+                    words += onlar[Math.floor(num / 10)] + " " + birgacha[num % 10];
+                }
+            }
+            
+            return words.trim();
+        }
+
+        function matnniTayyorlash(text) {
+            let yangiMatn = text.replace(/\d+/g, (match) => {
+                return raqamniMatngaOgir(match);
+            });
+            
+            yangiMatn = yangiMatn.replace(/o'/g, "o").replace(/g'/g, "g").replace(/sh/g, "sh").replace(/ch/g, "ch");
+            return yangiMatn;
+        }
+
+        let currentWords = [];
+        let activeWordIndex = -1;
+
+        function openModal(month, day) {
+            const monthObj = months.find(m => m.id === month);
+            const data = getRecord(month, day);
+
+            document.getElementById('modal-date').innerText = `${day}-${monthObj.name.toUpperCase()}`;
+            document.getElementById('modal-title').innerText = data.title;
+            document.getElementById('modal-img').src = data.img;
+
+            const descText = data.desc;
+            currentWords = descText.split(" ");
+            const subtitleArea = document.getElementById('subtitles-area');
+            subtitleArea.innerHTML = currentWords.map((word, idx) => `<span class="word-span" id="word-${idx}">${word}</span>`).join("");
+
+            document.getElementById('record-modal').classList.remove('hidden');
+
+            startSpeech(descText);
+        }
+
+        function startSpeech(text) {
+            window.speechSynthesis.cancel();
+            if (subtitleInterval) clearInterval(subtitleInterval);
+
+            const eshitiladiganMatn = matnniTayyorlash(text);
+            currentUtterance = new SpeechSynthesisUtterance(eshitiladiganMatn);
+            
+            currentUtterance.rate = 0.8; 
+            
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(v => v.lang.startsWith('tr') || v.lang.startsWith('ru')) || voices[0];
+            if (preferredVoice) currentUtterance.voice = preferredVoice;
+
+            activeWordIndex = 0;
+            const wordsCount = currentWords.length;
+            const durationPerWord = (text.length * 75) / wordsCount; 
+
+            subtitleInterval = setInterval(() => {
+                if (activeWordIndex < wordsCount) {
+                    if (activeWordIndex > 0) {
+                        document.getElementById(`word-${activeWordIndex - 1}`).classList.remove('word-active');
+                    }
+                    const currentSpan = document.getElementById(`word-${activeWordIndex}`);
+                    if (currentSpan) currentSpan.classList.add('word-active');
+                    activeWordIndex++;
+                } else {
+                    clearInterval(subtitleInterval);
+                }
+            }, durationPerWord);
+
+            window.speechSynthesis.speak(currentUtterance);
+        }
+
+        function toggleSpeech() {
+            const spans = document.querySelectorAll('.word-span');
+            const words = Array.from(spans).map(s => s.innerText);
+            startSpeech(words.join(" "));
+        }
+
+        function closeModal() {
+            window.speechSynthesis.cancel();
+            if (subtitleInterval) clearInterval(subtitleInterval);
+            document.getElementById('record-modal').classList.add('hidden');
+        }
+
+        document.getElementById('record-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        window.onload = () => {
+            selectMonth('iyul');
+
+            const todayData = getRecord('iyul', 15);
+            document.getElementById('today-title').innerText = todayData.title;
+            document.getElementById('today-desc').innerText = todayData.desc;
+            document.getElementById('today-img').src = todayData.img;
+        };
+    </script>
 </body>
+</html>
 </html>
